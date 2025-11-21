@@ -1,0 +1,377 @@
+---
+title: "Lab Assignment 3: Parameter Estimation and Unbiasedness of Estimators"
+author: "Team [Team Number]"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Work Breakdown Structure
+
+- Problem 1 - Lidiia Sokha
+- Problem 2 - Nazar Pasichnyk
+- Problem 3 - Viktoriia Kukurudza
+
+**Total:** 100%
+
+# Introduction
+
+```{r seed}
+# Set seed for reproducibility
+set.seed(39)
+```
+
+---
+
+# Part I: Parameter Estimation
+
+## Problem 1: Exponential Distribution Confidence Intervals
+
+### Problem Formulation and Discussion
+
+**Objective:**
+
+**Parameters:**
+- θ = team_id/10
+- α levels: 0.1, 0.05, 0.01
+- Sample sizes: n (to be varied)
+- Number of repetitions: m (to be varied)
+
+**Discussion:**
+
+### Method 1: Exact Distribution Using Chi-Square
+
+#### Theoretical Background
+
+#### R Implementation
+
+```{r problem1-method1}
+# Implementation for Method 1
+```
+
+#### Results and Statistics
+
+```{r problem1-method1-results}
+# Calculate statistics and create visualizations
+```
+
+### Method 2: Normal Approximation with Known Variance
+
+#### Theoretical Background
+
+#### R Implementation
+
+```{r problem1-method2}
+# Implementation for Method 2
+```
+
+#### Results and Statistics
+
+```{r problem1-method2-results}
+# Calculate statistics and create visualizations
+```
+
+### Method 3: Normal Approximation with Solved Inequality
+
+#### Theoretical Background
+
+#### R Implementation
+
+```{r problem1-method3}
+# Implementation for Method 3
+```
+
+#### Results and Statistics
+
+```{r problem1-method3-results}
+# Calculate statistics and create visualizations
+```
+
+### Method 4: Student t-Distribution Approach
+
+#### Theoretical Background
+
+#### R Implementation
+
+```{r problem1-method4}
+# Implementation for Method 4
+```
+
+#### Results and Statistics
+
+```{r problem1-method4-results}
+# Calculate statistics and create visualizations
+```
+
+### Task (a): Verification of Coverage Probability
+
+```{r problem1-verification}
+# Verify that confidence intervals contain θ approximately 100(1-α)% of times
+```
+
+#### Coverage Probability Results
+
+#### Visualization
+
+```{r problem1-coverage-plots}
+# Histograms and plots showing coverage
+```
+
+### Task (b): Comparison of Precision (Interval Lengths)
+
+```{r problem1-precision}
+# Compare lengths of confidence intervals
+```
+
+#### Precision Comparison Results
+
+#### Visualization
+
+```{r problem1-precision-plots}
+# Plots comparing interval lengths
+```
+
+### Task (c): Recommendation and Justification
+
+**Best Method:**
+
+**Justification:**
+
+**Conclusion:**
+
+---
+
+## Problem 2: Poisson Distribution Confidence Intervals
+
+### Problem Formulation and Discussion
+
+**Objective:**
+
+**Parameters:**
+- θ = team_id/10
+- α levels: 0.1, 0.05, 0.01
+- Sample sizes: n (to be varied)
+- Number of repetitions: m (to be varied)
+
+**Discussion:**
+
+### Method 2: Normal Approximation with Known Variance
+
+#### Theoretical Background
+
+#### R Implementation
+
+```{r problem2-method2}
+# Implementation for Method 2 (Poisson)
+```
+
+#### Results and Statistics
+
+```{r problem2-method2-results}
+# Calculate statistics and create visualizations
+```
+
+### Method 3: Normal Approximation with Solved Inequality
+
+#### Theoretical Background
+
+#### R Implementation
+
+```{r problem2-method3}
+# Implementation for Method 3 (Poisson)
+```
+
+#### Results and Statistics
+
+```{r problem2-method3-results}
+# Calculate statistics and create visualizations
+```
+
+### Method 4: Student t-Distribution Approach
+
+#### Theoretical Background
+
+#### R Implementation
+
+```{r problem2-method4}
+# Implementation for Method 4 (Poisson)
+```
+
+#### Results and Statistics
+
+```{r problem2-method4-results}
+# Calculate statistics and create visualizations
+```
+
+### Verification of Coverage Probability
+
+```{r problem2-verification}
+# Verify that confidence intervals contain θ approximately 100(1-α)% of times
+```
+
+#### Coverage Probability Results
+
+#### Visualization
+
+```{r problem2-coverage-plots}
+# Histograms and plots showing coverage
+```
+
+### Comparison of Precision (Interval Lengths)
+
+```{r problem2-precision}
+# Compare lengths of confidence intervals
+```
+
+#### Precision Comparison Results
+
+#### Visualization
+
+```{r problem2-precision-plots}
+# Plots comparing interval lengths
+```
+
+### Recommendation and Justification
+
+**Best Method:**
+
+**Justification:**
+
+**Conclusion:**
+
+---
+
+# Part II: Unbiasedness of Estimators
+
+## Problem 3: Analysis of Sample Variance Estimators
+
+### Problem Formulation and Discussion
+
+**Objective:**
+
+**Variance Estimators:**
+
+$$\sigma^2_n = \frac{1}{n}\sum_{i=1}^{n}(X_i - \bar{X})^2$$
+
+$$\sigma^2_{n-1} = \frac{1}{n-1}\sum_{i=1}^{n}(X_i - \bar{X})^2$$
+
+**Discussion:**
+
+### Task (a): Code to Calculate Variance
+
+```{r problem3-variance-code}
+# Function to calculate both variance estimators
+```
+
+### Task (b): Calculate Estimators for Different Sample Sizes
+
+#### n = 10
+
+```{r problem3-n10}
+# Calculate σ²_n and σ²_{n-1} for n=10
+```
+
+#### n = 50
+
+```{r problem3-n50}
+# Calculate σ²_n and σ²_{n-1} for n=50
+```
+
+#### n = 100
+
+```{r problem3-n100}
+# Calculate σ²_n and σ²_{n-1} for n=100
+```
+
+#### n = 1000
+
+```{r problem3-n1000}
+# Calculate σ²_n and σ²_{n-1} for n=1000
+```
+
+#### Summary Table
+
+```{r problem3-summary-table}
+# Create summary table of results
+```
+
+### Task (c): Calculate Biases
+
+```{r problem3-biases}
+# Calculate Bias(σ²_n) = E(σ²_n) - σ²
+# Calculate Bias(σ²_{n-1}) = E(σ²_{n-1}) - σ²
+```
+
+#### Bias Results
+
+#### Visualization
+
+```{r problem3-bias-plots}
+# Plot biases for different sample sizes
+```
+
+### Task (d): Commentary on Results for Different Values of n
+
+**Observations:**
+
+**Analysis:**
+
+### Task (e): Analytical Derivation of Expected Values
+
+#### Expected Value of σ²_n
+
+**Derivation:**
+
+$$E(\sigma^2_n) = E\left[\frac{1}{n}\sum_{i=1}^{n}(X_i - \bar{X})^2\right]$$
+
+**Result:**
+
+#### Expected Value of σ²_{n-1}
+
+**Derivation:**
+
+$$E(\sigma^2_{n-1}) = E\left[\frac{1}{n-1}\sum_{i=1}^{n}(X_i - \bar{X})^2\right]$$
+
+**Result:**
+
+### Task (f): Mathematical Proof of Unbiasedness
+
+#### Analysis of σ²_n
+
+**Bias:**
+
+**Conclusion:**
+
+#### Analysis of σ²_{n-1}
+
+**Bias:**
+
+**Conclusion:**
+
+### Task (g): Commentary on Theoretical vs Practical Results
+
+**Theoretical Findings:**
+
+**Practical Findings:**
+
+**Comparison:**
+
+**Conclusion:**
+
+---
+
+# Overall Conclusions
+
+## Summary of Findings
+
+### Part I: Parameter Estimation
+
+### Part II: Unbiasedness of Estimators
+
+## Final Remarks
+
+---
+
