@@ -40,107 +40,216 @@ set.seed(39)
 - Sample sizes: n (to be varied)
 - Number of repetitions: m (to be varied)
 
+## Saving parameters
+```{r}
+theta <- id_num/10
+lambda <- 1/theta
+
+n <- 500
+m <- 10000
+#0.1, 0.05, 0.01
+alpha <- 0.1
+conf_level <- 1- alpha
+
+cov_for_1 <- cov_for_2 <- cov_for_3 <- cov_for_4 <- 0
+len_for_1 <- len_for_2 <- len_for_3 <- len_for_4 <- 0
+```
+
 **Discussion:**
 
-### Method 1: Exact Distribution Using Chi-Square
+### Method 1 Chi-Squared distribution
+We consider a sample 
+$$
+X_1, X_2, \dots, X_n \stackrel{i.i.d}{\sim} \mathrm{Exp}(\lambda),
+$$
+with mean  
+$$
+\mathbb{E}[X_i] = \theta = \frac{1}{\lambda}.
+$$
+Let the sample mean be  
+$$
+\bar{X} = \frac{1}{n}\sum_{i=1}^n X_i.
+$$
+Distribution of the statistic:
+It is known that the sum  
+$$
+S_n = \sum_{i=1}^n X_i
+$$
+has a Gamma distribution with shape \(n\) and rate \(\lambda\).
+Therefore,
+$$
+2\lambda S_n \sim \chi^2_{2n}.
+$$
+We can rewrite it for ${\theta}$ and $\bar{X}$
+$$
+2n\bar{X}/\theta  \sim \cdot \chi^2_{2n}
+$$
 
-#### Theoretical Background
+Now we are using chi-square quantiles:
+
+The central $1-\alpha$-level confidence interval is based on
+
+$$
+P\left(
+\chi^2_{2n,\alpha/2}
+\;\le\;
+\frac{2n\bar{X}}{\theta}
+\;\le\;
+\chi^2_{2n,1-\alpha/2}
+\right)
+= 1 - \alpha.
+$$
+
+Thus, the exact $1-\alpha$-confidence interval for $\theta$ is:
+
+$$
+{
+\frac{2n\bar{X}}{\chi^2_{2n,1-\alpha/2}}
+\;\le\;
+\theta
+\;\le\;
+\frac{2n\bar{X}}{\chi^2_{2n,\alpha/2}}
+}
+$$
+
+$$
+P\left(
+\frac{2n\bar{X}}{\chi^2_{2n,1-\alpha/2}}
+\le \theta \le
+\frac{2n\bar{X}}{\chi^2_{2n,\alpha/2}}
+\right)
+= 1 - \alpha
+$$
+
+
+### Method 2 (Based on approximation)
+We approximate:
+$$
+\bar{X} \sim N\left( \theta, \frac{\theta^2}{n} \right)
+$$
+This gives the confidence interval for $\theta$:
+$$
+\theta \in \left[ \bar{X} - z_{\alpha/2} \frac{\theta}{\sqrt{n}}, \; \bar{X} + z_{\alpha/2} \frac{\theta}{\sqrt{n}} \right].
+$$
+
+This is not a real confidence interval for $\theta$, but in simulation, we can compute it because $\theta$ is known.
+
+
+### Method 3
+
+We start from the following inequality derived from Method 2:
+$$
+\left| \frac{\sqrt{n}(\bar{X} - \theta)}{\theta} \right| \le z_{\alpha/2}
+$$
+and solve it for $\theta$.
+
+This gives the confidence interval:
+$$
+{
+\frac{\sqrt{n}\bar{X}}{\sqrt{n} + z_{\alpha/2}}
+\;\le\;
+\theta
+\;\le\;
+\frac{\sqrt{n}\bar{X}}{\sqrt{n} - z_{\alpha/2}}
+}
+$$
+
+### Method 4
+
+Here we estimate the variance using the sample variance:
+$$
+s^2 = \frac{1}{n-1} \sum_{i=1}^n (X_i - \bar{X})^2.
+$$
+
+The confidence interval for $\theta$ is given by the formula:
+$$
+\bar{X} \pm t_{n-1}(1-\alpha/2) \frac{s}{\sqrt{n}},
+$$
+where $t_{n-1}(1-\alpha/2)$is the critical value from the $t$-distribution with $n-1$ degrees of freedom.
+
+This method works well for distributions where the true variance is unknown and is estimated from the sample, such as the exponential distribution.
 
 #### R Implementation
 
-```{r problem1-method1}
-# Implementation for Method 1
+```{r}
+for (i in 1:m){
+  x <- rexp(n, lambda)
+  x_bar <- mean(x)
+  sd <- sd(x)
+  
+  #Method (1)
+  #Chi-Squared distribution
+  L1 <- (2*n*x_bar)/qchisq(1-alpha/2, 2*n)
+  U1 <- (2*n*x_bar)/qchisq(alpha/2, 2*n)
+  cov_for_1 <- cov_for_1 + (L1 <= theta & theta <= U1)
+  len_for_1 <- len_for_1 + (U1 - L1)
+  
+  #Method (2)
+ #Based on approximation Var(Xbar)=theta^2/n
+  z <- qnorm(1-alpha/2)
+  L2 <- x_bar - z * theta / sqrt(n)
+  U2 <- x_bar + z * theta / sqrt(n)
+  cov_for_2 <- cov_for_2 + (L2 <= theta & theta <= U2)
+  len_for_2 <- len_for_2 + (U2 - L2)
+  
+  #Method(3)
+  #Normal independent
+  L3 <- (sqrt(n) * x_bar) / (sqrt(n) + z)
+  U3 <- (sqrt(n) * x_bar) / (sqrt(n) - z)
+  cov_for_3 <- cov_for_3 + (L3 <= theta & theta <= U3)
+  len_for_3 <- len_for_3 + (U3 - L3)
+  
+  #Method(4)
+  #Student distribution
+  t_value = qt(1-alpha/2, n-1)
+  L4 <- x_bar - t_value * sd / sqrt(n)
+  U4 <- x_bar + t_value * sd / sqrt(n)
+  cov_for_4 <- cov_for_4 + (L4 <= theta & theta <= U4)
+  len_for_4 <- len_for_4 + (U4 - L4)
+}
+
 ```
 
 #### Results and Statistics
 
-```{r problem1-method1-results}
-# Calculate statistics and create visualizations
+```
+avg_cov = c(cov_for_1, cov_for_2, cov_for_3, cov_for_4)/m
+avg_len = c(len_for_1, len_for_2, len_for_3, len_for_4)/m
+
+result <- data.frame(Method = c("Chi-square", "Normal (depends on θ)", "Normal (independent)", "Student t"), Coverage = avg_cov, Avg_Length = avg_len)
+result
+
+hist(avg_cov, main = "Coverage Distribution", xlab = "Coverage", col = "lightblue", border = "black")
+
+hist(avg_len, main = "Interval Length Distribution", xlab = "Average Length", col = "lightgreen", border = "black")
 ```
 
-### Method 2: Normal Approximation with Known Variance
+## Explaining results
+Coverage: All methods demonstrate a coverage close to 90%, meaning that, on average, the intervals capture the true value of $\theta$ 90% of the time.
+The Chi-square method has a slightly higher coverage compared to the others, but the difference is minimal. This suggests that all methods perform similarly in terms of capturing the true parameter value.
 
-#### Theoretical Background
+Average Length: The average interval lengths for all methods are in the range of 0.573 to 0.576, meaning that the methods produce intervals of similar size.
+The Normal (independent) method shows a slightly longer interval compared to the other methods, but this difference is minimal. Chi-square and Student t intervals also have similar lengths, suggesting little variation in the width of the confidence intervals across methods.
 
-#### R Implementation
-
-```{r problem1-method2}
-# Implementation for Method 2
-```
-
-#### Results and Statistics
-
-```{r problem1-method2-results}
-# Calculate statistics and create visualizations
-```
-
-### Method 3: Normal Approximation with Solved Inequality
-
-#### Theoretical Background
-
-#### R Implementation
-
-```{r problem1-method3}
-# Implementation for Method 3
-```
-
-#### Results and Statistics
-
-```{r problem1-method3-results}
-# Calculate statistics and create visualizations
-```
-
-### Method 4: Student t-Distribution Approach
-
-#### Theoretical Background
-
-#### R Implementation
-
-```{r problem1-method4}
-# Implementation for Method 4
-```
-
-#### Results and Statistics
-
-```{r problem1-method4-results}
-# Calculate statistics and create visualizations
-```
-
-### Task (a): Verification of Coverage Probability
-
-```{r problem1-verification}
-# Verify that confidence intervals contain θ approximately 100(1-α)% of times
-```
-
-#### Coverage Probability Results
-
-#### Visualization
-
-```{r problem1-coverage-plots}
-# Histograms and plots showing coverage
-```
-
-### Task (b): Comparison of Precision (Interval Lengths)
-
-```{r problem1-precision}
-# Compare lengths of confidence intervals
-```
-
-#### Precision Comparison Results
-
-#### Visualization
-
-```{r problem1-precision-plots}
-# Plots comparing interval lengths
-```
-
-### Task (c): Recommendation and Justification
+Recommendation and Justification
 
 **Best Method:**
 
+Based on the analysis, the Chi-square method is slightly favored due to its higher coverage, which is just a bit above 90%. However, the differences between all the methods are very small, and all methods provide similar results.
+
 **Justification:**
 
+Coverage: The Chi-square method has a slightly higher coverage compared to the others, which indicates a marginally better performance in capturing the true value of $\theta$ 
+Interval Length: The length of intervals for all methods is very similar, meaning there is no significant difference in the precision of the estimates.
+Consistency: All methods show consistent results, with minor differences in coverage and interval length, making them all viable options.
+Practical Considerations: In practice, all methods can be used interchangeably, as they all achieve a similar performance with minimal variation in results.
+
 **Conclusion:**
+
+All methods produce very similar results with coverage around 90% and interval lengths between 0.573 and 0.576. The Chi-square method slightly outperforms the others in coverage, but the difference is negligible.
+
+Given the small differences, any of the methods can be used without significantly affecting the results.
+
 
 ---
 
